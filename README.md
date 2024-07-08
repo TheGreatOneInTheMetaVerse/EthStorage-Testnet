@@ -33,6 +33,10 @@ Deployment Address : <Your Address>
 ```
 
 - Copy the tweet link and fill up [this form](https://dawme4mo.forms.app/ethstorage-2nd-campaign-submission?ref=blog.ethstorage.io)
+
+## Submission
+
+- You can check here whether you submission is passed or not : [Link](https://ethstorage.knack.com/campaigns#query/)
 ## Donation
 If you like my work, You can donate me here : 
 | Solana Address |  ![Solana](https://camo.githubusercontent.com/bcacdb23de4d6eb40252687527dcd0aeb2683e7c8187181fce1999cee25c12f4/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f736f6c616e612d677265793f6c6f676f3d736f6c616e61266c6f676f436f6c6f723d7768697465)  | 8tjMh82bCGyF5D214L6YweeCytj8bMToShNBptBgRAQa |
