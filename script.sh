@@ -69,8 +69,10 @@ cat <<EOL > app.html
 				}
 
 
+				// Wrap the fetch() function to convert web3:// URLs into gateway URLs
 				const originalFetch = fetch;
 				fetch = function(input, init) {
+					// Process absolute web3:// URLS: convert them into gateway HTTP RULS
 					if (typeof input === 'string' && input.startsWith('web3://')) {
 						const convertedUrl = convertWeb3UrlToGatewayUrl(input);
 						if(convertedUrl) {
@@ -79,10 +81,12 @@ cat <<EOL > app.html
 						}
 					}
 
+					// Pipe through the original fetch function
 					return originalFetch(input, init);
 				};
 
 
+				// Listen for clicks on <a> tags, and convert web3:// URLs into gateway URLs
 				document.addEventListener('click', function(event) {
 					if(event.target.tagName === 'A' && event.target.href.startsWith('web3://')) {
 						event.preventDefault();
@@ -101,7 +105,7 @@ cat <<EOL > app.html
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Head or Tail Prediction Game</title>
-    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <style>
         body {
             display: flex;
@@ -109,7 +113,7 @@ cat <<EOL > app.html
             align-items: center;
             height: 100vh;
             margin: 0;
-            background: linear-gradient(to right, #4280f3, #5ceca4);
+            background: linear-gradient(to right, #ff7e5f, #feb47b);
             font-family: 'Roboto', sans-serif;
             color: #fff;
             text-align: center;
@@ -133,7 +137,7 @@ cat <<EOL > app.html
             margin: 10px auto;
             border: none;
             border-radius: 5px;
-            background-color: #b8a70f;
+            background-color: #4caf50;
             color: white;
             font-size: 16px;
             cursor: pointer;
@@ -141,7 +145,7 @@ cat <<EOL > app.html
         }
 
         button:hover {
-            background-color: #26c1f0;
+            background-color: #e75115;
         }
 
         #status {
