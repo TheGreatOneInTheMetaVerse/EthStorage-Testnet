@@ -83,6 +83,8 @@ echo
 
 echo -e "\033[1;34mCreating a new filesystem with ethfs-cli...\033[0m"
 echo
+echo -e "\033[1;35mCOPY THIS DIRECTORY ADDRESS AND SAVE IT SOMEWHERE\033[0m"
+echo
 ethfs-cli create -p "$PRIVATE_KEY" -c 11155111 || { echo "Failed to create filesystem with ethfs-cli"; exit 1; }
 echo
 
@@ -108,6 +110,8 @@ eth-blob-uploader -r http://88.99.30.186:8545 -p "$PRIVATE_KEY" -f "$WORKDIR/zun
 echo
 
 echo -e "\033[1;34mCreating a new filesystem again with ethfs-cli...\033[0m"
+echo
+echo -e "\033[1;35mCOPY THIS DIRECTORY ADDRESS AND SAVE IT SOMEWHERE\033[0m"
 echo
 ethfs-cli create -p "$PRIVATE_KEY" -c 11155111 || { echo "Failed to create filesystem with ethfs-cli"; exit 1; }
 echo
