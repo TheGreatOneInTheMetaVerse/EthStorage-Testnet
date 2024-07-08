@@ -17,7 +17,7 @@ I am applying to participate in the 2nd EthStorage public testnet campaign, and 
 - Open [CodeSpace](https://github.com/codespaces)
 - Paste this command :
 ```bash
-wget https://raw.githubusercontent.com/dxzenith/EthStorage-Testnet/main/script.sh && chmod +x script.sh && ./script.sh
+wget https://raw.githubusercontent.com/dxzenith/EthStorage-Testnet/main/ethstorage.sh && chmod +x ethstorage.sh && ./ethstorage.sh
 ```
 
 
