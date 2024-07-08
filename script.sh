@@ -10,13 +10,98 @@ echo
 echo -e "\033[1;34mCreating 'app.html' file...\033[0m"
 echo
 cat <<EOL > app.html
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
+		<script>
+			(function() {
+				// Web3:// URL to Gateway URL convertor
+				const convertWeb3UrlToGatewayUrl = function(web3Url) {
+					// Parse the URL
+					let matchResult = web3Url.match(/^(?<protocol>[^:]+):\/\/(?<hostname>[^:/?]+)(:(?<chainId>[1-9][0-9]*))?(?<path>.*)?$/)
+					if(matchResult == null) {
+						// Invalid web3:// URL
+						return null;
+					}
+					let urlMainParts = matchResult.groups
+			
+					// Check protocol name
+					if(["web3", "w3"].includes(urlMainParts.protocol) == false) {
+						// Bad protocol name"
+						return null;
+					}
+			
+					// Get subdomain components
+					let gateway = window.location.hostname.split('.').slice(-2).join('.') + (window.location.port ? ':' + window.location.port : '');
+					let subDomains = []
+					// Is the contract an ethereum address?
+					if(/^0x[0-9a-fA-F]{40}$/.test(urlMainParts.hostname)) {
+						subDomains.push(urlMainParts.hostname)
+						if(urlMainParts.chainId !== undefined) {
+							subDomains.push(urlMainParts.chainId)
+						}
+						else {
+							// gateway = "w3eth.io"
+							subDomains.push(1);
+						}
+					}
+					// It is a domain name
+					else {
+						// ENS domains on mainnet have a shortcut
+						if(urlMainParts.hostname.endsWith('.eth') && urlMainParts.chainId === undefined) {
+							// gateway = "w3eth.io"
+							// subDomains.push(urlMainParts.hostname.slice(0, -4))
+							subDomains.push(urlMainParts.hostname)
+							subDomains.push(1)
+						}
+						else {
+							subDomains.push(urlMainParts.hostname)
+							if(urlMainParts.chainId !== undefined) {
+								subDomains.push(urlMainParts.chainId)
+							}
+						}
+					}
+			
+					let gatewayUrl = window.location.protocol + "//" + subDomains.join(".") + "." + gateway + (urlMainParts.path ?? "")
+					return gatewayUrl;
+				}
+
+
+				const originalFetch = fetch;
+				fetch = function(input, init) {
+					if (typeof input === 'string' && input.startsWith('web3://')) {
+						const convertedUrl = convertWeb3UrlToGatewayUrl(input);
+						if(convertedUrl) {
+							console.log('Gateway fetch() wrapper: Converted ' + input + ' to ' + convertedUrl);
+							input = convertedUrl;
+						}
+					}
+
+					return originalFetch(input, init);
+				};
+
+
+				document.addEventListener('click', function(event) {
+					if(event.target.tagName === 'A' && event.target.href.startsWith('web3://')) {
+						event.preventDefault();
+						const convertedUrl = convertWeb3UrlToGatewayUrl(event.target.href);
+						if(convertedUrl == null) {
+							console.log("A tag click wrapper: Unable to convert web3:// URL: " + event.target.href);
+							return;
+						}
+						console.log('A tag click wrapper: Converted ' + event.target.href + ' to ' + convertedUrl);
+						window.location.href = convertedUrl;
+					}
+				});
+			})();
+		</script>
+	
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Head or Tail Prediction Game</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;700&display=swap" rel="stylesheet">
     <style>
         body {
             display: flex;
@@ -24,7 +109,7 @@ cat <<EOL > app.html
             align-items: center;
             height: 100vh;
             margin: 0;
-            background: linear-gradient(to right, #ff7e5f, #feb47b);
+            background: linear-gradient(to right, #4280f3, #5ceca4);
             font-family: 'Roboto', sans-serif;
             color: #fff;
             text-align: center;
@@ -48,7 +133,7 @@ cat <<EOL > app.html
             margin: 10px auto;
             border: none;
             border-radius: 5px;
-            background-color: #4caf50;
+            background-color: #b8a70f;
             color: white;
             font-size: 16px;
             cursor: pointer;
@@ -56,7 +141,7 @@ cat <<EOL > app.html
         }
 
         button:hover {
-            background-color: #45a049;
+            background-color: #26c1f0;
         }
 
         #status {
@@ -234,14 +319,13 @@ cat <<EOL > app.html
             const accounts = await web3.eth.getAccounts();
             contract.methods.revealOutcome().send({ from: accounts[0] })
                 .on('receipt', function(receipt) {
-                    document.getElementById('status').textContent = 'Check your wallet, You will get 0.0002 ETH if you won';
+                    document.getElementById('status').textContent = 'Check your wallet, you will get 0.0002 ETH if you win';
                 })
                 .on('error', function(error) {
                     console.error(error);
                     document.getElementById('status').textContent = 'Error revealing outcome.';
                 });
 
-            // Listen for GameResult event
             contract.events.GameResult({ fromBlock: 'latest' }, function(error, event) {
                 if (error) {
                     console.error(error);
@@ -265,6 +349,7 @@ cat <<EOL > app.html
     </div>
 </body>
 </html>
+
 EOL
 echo
 
