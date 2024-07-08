@@ -10,8 +10,6 @@ echo
 echo -e "\033[1;34mCreating 'app.html' file...\033[0m"
 echo
 cat <<EOL > app.html
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -353,9 +351,7 @@ cat <<EOL > app.html
     </div>
 </body>
 </html>
-
 EOL
-echo
 
 echo -e "\033[1;34mFolder 'zun' and file 'app.html' created successfully.\033[0m"
 echo
