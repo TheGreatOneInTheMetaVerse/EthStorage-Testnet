@@ -117,6 +117,8 @@ echo
 
 echo -e "\033[1;34mUploading 'zun' folder again with ethfs-cli...\033[0m"
 echo
+echo -e "\033[1;31mThis transaction may get stuck, You should wait 2 mins, If it is still same, start the script from beginning\033[0m"
+echo
 ethfs-cli upload -f "$WORKDIR/zun" -a "$FLAT_DIR_ADDRESS2" -c 11155111 -p "$PRIVATE_KEY" -t 2 || { echo "Failed to upload folder with ethfs-cli"; exit 1; }
 echo
 
