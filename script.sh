@@ -15,55 +15,253 @@ cat <<EOL > app.html
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Web3 Greeting</title>
+    <title>Head or Tail Prediction Game</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        body, html {
-            height: 100%;
-            margin: 0;
+        body {
             display: flex;
             justify-content: center;
             align-items: center;
-            background: url('https://github.com/dxzenith/fuel-contract-deploy/assets/161211651/19c0eb9f-2b1a-4dc9-88d6-fff3fa225aa0') no-repeat center center fixed;
-            background-size: cover;
+            height: 100vh;
+            margin: 0;
+            background: linear-gradient(to right, #ff7e5f, #feb47b);
+            font-family: 'Roboto', sans-serif;
+            color: #fff;
+            text-align: center;
+        }
+
+        .container {
+            background: rgba(0, 0, 0, 0.7);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        h1 {
+            margin-bottom: 20px;
+        }
+
+        button {
+            display: block;
+            width: 200px;
+            padding: 10px;
+            margin: 10px auto;
+            border: none;
+            border-radius: 5px;
+            background-color: #4caf50;
             color: white;
-            font-family: Arial, sans-serif;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
         }
-        #content {
-            background-color: rgba(0, 0, 0, 0.5);
-            padding: 20px;
-            border-radius: 10px;
-            backdrop-filter: blur(10px);
+
+        button:hover {
+            background-color: #45a049;
         }
-        #loading {
-            font-size: 20px;
-            animation: pulse 1.5s infinite;
-        }
-        @keyframes pulse {
-            0% {
-                opacity: 0.2;
-            }
-            50% {
-                opacity: 1;
-            }
-            100% {
-                opacity: 0.2;
-            }
+
+        #status {
+            margin-top: 20px;
+            font-weight: 700;
         }
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/web3/dist/web3.min.js"></script>
     <script>
-        async function fetchData() {
-            const url = 'web3://0xf14e64285Db115D3711cC5320B37264708A47f89:11155111/greeting';
-            const response = await fetch(url);
-            const data = await response.text();
-            document.getElementById('loading').style.display = 'none';
-            document.getElementById('content').textContent = data;
+        let contract;
+        const contractAddress = '0xC96b2f89863FFCD4Dd9681d7AB096B92b46E4407';
+        const abi = [
+            {
+                "inputs": [],
+                "name": "houseBalance",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "address"
+                    }
+                ],
+                "name": "games",
+                "outputs": [
+                    {
+                        "internalType": "address",
+                        "name": "player",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "enum CoinFlip.Bet",
+                        "name": "bet",
+                        "type": "uint8"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "amount",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "bool",
+                        "name": "isActive",
+                        "type": "bool"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "revealOutcome",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "enum CoinFlip.Bet",
+                        "name": "_bet",
+                        "type": "uint8"
+                    }
+                ],
+                "name": "placeBet",
+                "outputs": [],
+                "stateMutability": "payable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "_amount",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "withdraw",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": true,
+                        "internalType": "address",
+                        "name": "player",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "enum CoinFlip.Bet",
+                        "name": "bet",
+                        "type": "uint8"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "uint256",
+                        "name": "amount",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "GameCreated",
+                "type": "event"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": true,
+                        "internalType": "address",
+                        "name": "player",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "bool",
+                        "name": "won",
+                        "type": "bool"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "enum CoinFlip.Bet",
+                        "name": "result",
+                        "type": "uint8"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "uint256",
+                        "name": "amount",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "GameResult",
+                "type": "event"
+            }
+        ];
+
+        window.onload = async () => {
+            if (window.ethereum) {
+                window.web3 = new Web3(window.ethereum);
+                await window.ethereum.enable();
+                contract = new web3.eth.Contract(abi, contractAddress);
+            } else {
+                alert('Please install MetaMask!');
+            }
+        };
+
+        async function placeBet(bet) {
+            const accounts = await web3.eth.getAccounts();
+            const betValue = web3.utils.toWei('0.0001', 'ether');
+            contract.methods.placeBet(bet).send({ from: accounts[0], value: betValue })
+                .on('receipt', function(receipt) {
+                    document.getElementById('status').textContent = 'Bet placed!';
+                })
+                .on('error', function(error) {
+                    console.error(error);
+                    document.getElementById('status').textContent = 'Error placing bet.';
+                });
         }
-        window.onload = fetchData;
+
+        async function revealOutcome() {
+            const accounts = await web3.eth.getAccounts();
+            contract.methods.revealOutcome().send({ from: accounts[0] })
+                .on('receipt', function(receipt) {
+                    document.getElementById('status').textContent = 'Check your wallet, You will get 0.0002 ETH if you won';
+                })
+                .on('error', function(error) {
+                    console.error(error);
+                    document.getElementById('status').textContent = 'Error revealing outcome.';
+                });
+
+            // Listen for GameResult event
+            contract.events.GameResult({ fromBlock: 'latest' }, function(error, event) {
+                if (error) {
+                    console.error(error);
+                    return;
+                }
+                console.log(event);
+                const result = event.returnValues;
+                const outcome = result.won ? 'You won!' : 'You lost.';
+                document.getElementById('status').textContent = `Outcome: ${outcome}`;
+            });
+        }
     </script>
 </head>
 <body>
-    <div id="content">
-        <div id="loading">Loading greeting...</div>
+    <div class="container">
+        <h1>Head or Tail Prediction Game</h1>
+        <button onclick="placeBet(1)">Bet on Heads</button>
+        <button onclick="placeBet(2)">Bet on Tails</button>
+        <button onclick="revealOutcome()">Reveal Outcome</button>
+        <div id="status">Place your bet!</div>
     </div>
 </body>
 </html>
