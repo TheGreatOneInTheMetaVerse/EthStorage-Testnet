@@ -120,5 +120,8 @@ echo
 ethfs-cli upload -f "$WORKDIR/zun" -a "$FLAT_DIR_ADDRESS2" -c 11155111 -p "$PRIVATE_KEY" -t 2 || { echo "Failed to upload folder with ethfs-cli"; exit 1; }
 echo
 
+echo -e "\033[1;32mThis is your application’s web3 link:\033[0m https://"$FLAT_DIR_ADDRESS2".3333.w3link.io/app.html"
+echo
+
 echo -e "\033[1;32mAll tasks completed successfully.\033[0m"
 echo
