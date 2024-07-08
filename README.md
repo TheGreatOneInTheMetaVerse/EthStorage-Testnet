@@ -12,6 +12,9 @@ I am applying to participate in the 2nd EthStorage public testnet campaign, and 
 
 ## Installation
 
+https://github.com/dxzenith/EthStorage-Testnet/assets/161211651/7fbda0a2-6b67-43ce-b04a-bedbd2d66f67
+
+- This script is functional only on Codespace
 - Use the EVM address which you submitted in the whitelist form
 - Also make sure that you have atleast 1 Sepolia ETH on this address
 - Open [CodeSpace](https://github.com/codespaces)
